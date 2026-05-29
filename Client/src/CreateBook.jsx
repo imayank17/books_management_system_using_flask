@@ -7,12 +7,12 @@ const CreateBook = () => { // defined the functional component named createbook
         publisher:"",
         name:"",
         date:'',
-        cost:''
+        Cost:''
     })
     const navigate = useNavigate() // navigate to the home page
     const handleSubmit= (e) =>{    // event handler to handle form submission
         e.preventDefault()        // prevent default form submission
-        axios.post('http://localhost:5000/create', values) // sends the post request to the server
+        axios.post('http://localhost:5001/create', values) // sends the post request to the server
         .then(res => navigate('/'))                        // on successful response user will be navigated to the home page 
         .catch(err => console.log(err))                    //logs error occur during request
     }
@@ -53,13 +53,13 @@ const CreateBook = () => { // defined the functional component named createbook
                     />
                 </div>
                 <div class="mb-3">
-                    <label htmlFor="cost" 
-                    class="form-label">cost:
+                    <label htmlFor="Cost" 
+                    class="form-label">Cost:
                     </label>
                     <input type="text" 
                      class="form-control"
-                    name="name" 
-                    onChange={(e)=> setValues({...values, cost: e.target.value})}
+                    name="Cost" 
+                    onChange={(e)=> setValues({...values, Cost: e.target.value})}
                     />
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>

@@ -13,7 +13,7 @@ const Books = () => {
     };
 
     const handleDelete = (bookId) => {
-        axios.delete(`http://localhost:5000/delete/${bookId}`)
+        axios.delete(`http://localhost:5001/delete/${bookId}`)
             .then(() => {
                 setBooks(books.filter(book => book.id !== bookId));
             })
@@ -21,7 +21,7 @@ const Books = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:5000')
+        axios.get('http://localhost:5001')
             .then(res => {
                 if (Array.isArray(res.data)) {
                     setBooks(res.data);
@@ -42,7 +42,7 @@ const Books = () => {
                             <th scope='col'>Publisher</th>
                             <th scope='col'>Book</th>
                             <th scope='col'>Date</th>
-                            <th scope='col'>cost</th>
+                            <th scope='col'>Cost</th>
                             <th scope='col'>Actions</th>
                         </tr>
                     </thead>
@@ -52,7 +52,7 @@ const Books = () => {
                                 <td>{book.publisher}</td>
                                 <td>{book.name}</td>
                                 <td>{book.date}</td>
-                                <td>{book.cost}</td>
+                                <td>{book.Cost}</td>
                                 <td>
                                     <button className="btn btn-primary" onClick={() => handleUpdate(book)}>
                                         Update

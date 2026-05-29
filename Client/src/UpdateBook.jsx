@@ -10,14 +10,14 @@ const UpdateBook = () => {
         publisher: book.publisher,
         name: book.name,
         date: book.date,
-        cost: book.cost
+        Cost: book.Cost
     });
 
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:5000/update/${book.id}`, values)
+        axios.put(`http://localhost:5001/update/${book.id}`, values)
             .then(res => navigate('/'))
             .catch(err => console.log(err));
     }
@@ -56,13 +56,13 @@ const UpdateBook = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="cost" className="form-label">Book name:</label>
+                    <label htmlFor="Cost" className="form-label">Book name:</label>
                     <input type="text"
                         className="form-control"
                         placeholder="Rupees"
-                        name="cost"
-                        value={values.cost}
-                        onChange={(e) => setValues({ ...values, cost: e.target.value })}
+                        name="Cost"
+                        value={values.Cost}
+                        onChange={(e) => setValues({ ...values, Cost: e.target.value })}
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Update</button>

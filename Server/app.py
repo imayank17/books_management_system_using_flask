@@ -1,39 +1,52 @@
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import sqlite3
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-db_config = {
-    'host': 'localhost',
-    'user': 'postgres',
-    'password': '12345',
-    'dbname': 'demo_flask'
-}
+DB_PATH = os.path.join(os.path.dirname(__file__), 'books.db')
 
 def get_db_connection():
-    connection = psycopg2.connect(**db_config)
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
     return connection
+
+def init_db():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS book (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            publisher TEXT NOT NULL,
+            name TEXT NOT NULL,
+            date TEXT NOT NULL,
+            Cost REAL NOT NULL
+        )
+    ''')
+    connection.commit()
+    connection.close()
 
 @app.route('/', methods=['GET'])
 def get_books():
     connection = get_db_connection()
-    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM book")
-    result = cursor.fetchall()
+    rows = cursor.fetchall()
     cursor.close()
     connection.close()
-    return jsonify(result)
+    return jsonify([dict(row) for row in rows])
 
 @app.route('/create', methods=['POST'])
 def create_books():
     new_book = request.get_json()
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO book (publisher, name, date, cost) VALUES (%s, %s, %s, %s)", (new_book['publisher'], new_book['name'], new_book['date'],new_book['cost']))
+    cursor.execute(
+        "INSERT INTO book (publisher, name, date, Cost) VALUES (?, ?, ?, ?)",
+        (new_book['publisher'], new_book['name'], new_book['date'], new_book['Cost'])
+    )
     connection.commit()
     cursor.close()
     connection.close()
@@ -44,7 +57,10 @@ def update_book(id):
     updated_book = request.get_json()
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("UPDATE book SET publisher=%s, name=%s, date=%s , cost=%s WHERE id=%s", (updated_book['publisher'], updated_book['name'], updated_book['date'], updated_book['cost'],id))
+    cursor.execute(
+        "UPDATE book SET publisher=?, name=?, date=?, Cost=? WHERE id=?",
+        (updated_book['publisher'], updated_book['name'], updated_book['date'], updated_book['Cost'], id)
+    )
     connection.commit()
     cursor.close()
     connection.close()
@@ -54,11 +70,12 @@ def update_book(id):
 def delete_book(id):
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM book WHERE id=%s", (id,))
+    cursor.execute("DELETE FROM book WHERE id=?", (id,))
     connection.commit()
     cursor.close()
     connection.close()
     return jsonify({'result': 'Book deleted'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    init_db()
+    app.run(debug=True, port=5001)
