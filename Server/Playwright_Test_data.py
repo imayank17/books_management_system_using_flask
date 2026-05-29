@@ -1,55 +1,37 @@
-import time
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import sqlite3
+import os
 
-db_config = {
-    'host': 'localhost',
-    'user': 'postgres',
-    'password': 'password123',
-    'dbname': 'flask_demo',
-    'port': 5432
-}
+DB_PATH = os.path.join(os.path.dirname(__file__), 'books.db')
 
 sample_books = [
-    ("The Great Gatsby", "Scribner", "1925-04-10", 10.99),
-    ("1984", "Secker & Warburg", "1949-06-08", 8.99),
-    ("To Kill a Mockingbird", "J.B. Lippincott & Co.", "1960-07-11", 12.5)
+    ("Scribner", "The Great Gatsby", "1925-04-10", 10.99),
+    ("Secker & Warburg", "1984", "1949-06-08", 8.99),
+    ("J.B. Lippincott & Co.", "To Kill a Mockingbird", "1960-07-11", 12.50)
 ]
 
-# Retry until DB is ready (GitHub Actions sometimes start PostgreSQL slowly)
-max_retries = 10
-for attempt in range(max_retries):
-    try:
-        conn = psycopg2.connect(**db_config)
-        break
-    except Exception as e:
-        print(f"Database not ready, retrying... ({attempt+1}/{max_retries})")
-        time.sleep(5)
-else:
-    raise Exception("Database connection failed after retries")
-
-cur = conn.cursor(cursor_factory=RealDictCursor)
+conn = sqlite3.connect(DB_PATH)
+cur = conn.cursor()
 
 # Create table if not exists
 cur.execute("""
     CREATE TABLE IF NOT EXISTS book (
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         publisher TEXT NOT NULL,
-        date DATE NOT NULL,
-        cost NUMERIC NOT NULL
+        name TEXT NOT NULL,
+        date TEXT NOT NULL,
+        Cost REAL NOT NULL
     )
 """)
 
-# Insert sample books
+# Insert sample books if they don't already exist
 for book in sample_books:
     cur.execute("""
-        INSERT INTO book (name, publisher, date, cost)
-        SELECT %s, %s, %s, %s
+        INSERT INTO book (publisher, name, date, Cost)
+        SELECT ?, ?, ?, ?
         WHERE NOT EXISTS (
-            SELECT 1 FROM book WHERE name=%s AND publisher=%s
+            SELECT 1 FROM book WHERE name=? AND publisher=?
         )
-    """, (book[0], book[1], book[2], book[3], book[0], book[1]))
+    """, (book[0], book[1], book[2], book[3], book[1], book[0]))
 
 conn.commit()
 cur.close()
