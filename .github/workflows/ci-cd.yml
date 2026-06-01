@@ -111,7 +111,7 @@ jobs:
 
       - name: Start Flask backend
         working-directory: Server
-        run: python app.py &
+        run: python -m flask --app app run --host 127.0.0.1 --port 5001 &
 
       - name: Wait for backend health check
         run: |
@@ -140,7 +140,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: Client
-        run: npm test
+        run: npx playwright test --workers=1
 
       - name: Upload Playwright report
         if: always()

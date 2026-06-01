@@ -1,19 +1,23 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 
 const UpdateBook = () => {
     const location = useLocation();
-    const book = location.state.book;
+    const book = location.state?.book;
 
     const [values, setValues] = useState({
-        publisher: book.publisher,
-        name: book.name,
-        date: book.date,
-        cost: book.cost
+        publisher: book?.publisher || '',
+        name: book?.name || '',
+        date: book?.date || '',
+        cost: book?.cost || ''
     });
 
     const navigate = useNavigate();
+
+    if (!book) {
+        return <Navigate to="/" replace />;
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
