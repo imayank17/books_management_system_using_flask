@@ -22,7 +22,7 @@ def init_db():
             publisher TEXT NOT NULL,
             name TEXT NOT NULL,
             date TEXT NOT NULL,
-            Cost REAL NOT NULL
+            cost REAL NOT NULL
         )
     ''')
     connection.commit()
@@ -44,8 +44,8 @@ def create_books():
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "INSERT INTO book (publisher, name, date, Cost) VALUES (?, ?, ?, ?)",
-        (new_book['publisher'], new_book['name'], new_book['date'], new_book['Cost'])
+        "INSERT INTO book (publisher, name, date, cost) VALUES (?, ?, ?, ?)",
+        (new_book['publisher'], new_book['name'], new_book['date'], new_book['cost'])
     )
     connection.commit()
     cursor.close()
@@ -58,8 +58,8 @@ def update_book(id):
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "UPDATE book SET publisher=?, name=?, date=?, Cost=? WHERE id=?",
-        (updated_book['publisher'], updated_book['name'], updated_book['date'], updated_book['Cost'], id)
+        "UPDATE book SET publisher=?, name=?, date=?, cost=? WHERE id=?",
+        (updated_book['publisher'], updated_book['name'], updated_book['date'], updated_book['cost'], id)
     )
     connection.commit()
     cursor.close()
@@ -75,6 +75,10 @@ def delete_book(id):
     cursor.close()
     connection.close()
     return jsonify({'result': 'Book deleted'})
+
+@app.route("/health")
+def health():
+    return {"status": "healthy"}, 200
 
 if __name__ == '__main__':
     init_db()

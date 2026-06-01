@@ -42,7 +42,7 @@ const Books = () => {
                             <th scope='col'>Publisher</th>
                             <th scope='col'>Book</th>
                             <th scope='col'>Date</th>
-                            <th scope='col'>Cost</th>
+                            <th scope='col'>cost</th>
                             <th scope='col'>Actions</th>
                         </tr>
                     </thead>
@@ -52,7 +52,7 @@ const Books = () => {
                                 <td>{book.publisher}</td>
                                 <td>{book.name}</td>
                                 <td>{book.date}</td>
-                                <td>{book.Cost}</td>
+                                <td>{book.cost}</td>
                                 <td>
                                     <button className="btn btn-primary" onClick={() => handleUpdate(book)}>
                                         Update
