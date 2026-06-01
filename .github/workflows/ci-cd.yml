@@ -109,6 +109,10 @@ jobs:
         working-directory: Server
         run: python -c "from app import init_db; init_db()"
 
+      - name: Seed E2E database
+        working-directory: Server
+        run: python -c "from app import get_db_connection; conn = get_db_connection(); conn.execute('INSERT INTO book (publisher, name, date, cost) VALUES (?, ?, ?, ?)', ('CI Publisher', 'CI Book', '2026-06-01', 99.99)); conn.commit(); conn.close()"
+
       - name: Start Flask backend
         working-directory: Server
         run: python -m flask --app app run --host 127.0.0.1 --port 5001 &
