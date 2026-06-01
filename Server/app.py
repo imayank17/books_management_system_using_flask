@@ -16,16 +16,49 @@ def get_db_connection():
 def init_db():
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS book (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            publisher TEXT NOT NULL,
-            name TEXT NOT NULL,
-            date TEXT NOT NULL,
-            cost REAL NOT NULL
-        )
-    ''')
-    connection.commit()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='book'")
+    if cursor.fetchone() is None:
+        cursor.execute('''
+            CREATE TABLE book (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                publisher TEXT NOT NULL,
+                name TEXT NOT NULL,
+                date TEXT NOT NULL,
+                cost REAL NOT NULL
+            )
+        ''')
+        connection.commit()
+    else:
+        cursor.execute("PRAGMA table_info(book)")
+        columns = [row['name'] for row in cursor.fetchall()]
+        if 'Cost' in columns and 'cost' not in columns:
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS book_temp (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    publisher TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    date TEXT NOT NULL,
+                    cost REAL NOT NULL
+                )
+            ''')
+            cursor.execute(
+                "INSERT INTO book_temp (id, publisher, name, date, cost) SELECT id, publisher, name, date, Cost FROM book"
+            )
+            cursor.execute("DROP TABLE book")
+            cursor.execute("ALTER TABLE book_temp RENAME TO book")
+            connection.commit()
+        elif 'cost' not in columns:
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS book (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    publisher TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    date TEXT NOT NULL,
+                    cost REAL NOT NULL
+                )
+            ''')
+            connection.commit()
+    cursor.close()
     connection.close()
 
 @app.route('/', methods=['GET'])

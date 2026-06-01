@@ -56,7 +56,7 @@ const UpdateBook = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="cost" className="form-label">Book name:</label>
+                    <label htmlFor="cost" className="form-label">cost:</label>
                     <input type="text"
                         className="form-control"
                         placeholder="Rupees"
