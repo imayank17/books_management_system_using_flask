@@ -752,10 +752,12 @@ cd Client
 npm install
 ```
 
-## Quick Explanation For Presentation
+## running pytests
+```bash
+cd Server
+python -m pytest
 
-This project is a full-stack CRUD Book Management System. The React frontend runs on port `5173` and provides the user interface. It uses Axios to send HTTP requests to the Flask backend on port `5001`. Flask performs create, read, update, and delete operations on a SQLite database file called `books.db`. The project also includes Pytest tests for backend APIs, Playwright tests for frontend flows, Newman tests for API scenarios, Wireshark steps for Windows traffic monitoring, tcpdump steps for Linux traffic monitoring, and DB Browser steps for inspecting database records.
+or
 
-## License
-
-This project is for educational purposes.
+python -m pytest tests/pytest -v             -->  It shows each test name.
+```
